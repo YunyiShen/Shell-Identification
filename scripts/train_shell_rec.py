@@ -14,6 +14,7 @@ from ShellRec.training.shell_rec import TurtleDiff, TurtlePair, train
 
 # Path: scripts/train_shell_rec.py
 def main():
+    torch.hub.set_dir('./pretrained/') # place to save pretrained models
     transform_train = transforms.create_transform(384, is_training = True, 
                                    auto_augment = "rand-m9-mstd0.5")
 
