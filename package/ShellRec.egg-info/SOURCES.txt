@@ -1,0 +1,5 @@
+setup.py
+ShellRec.egg-info/PKG-INFO
+ShellRec.egg-info/SOURCES.txt
+ShellRec.egg-info/dependency_links.txt
+ShellRec.egg-info/top_level.txt

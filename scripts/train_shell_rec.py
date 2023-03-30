@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 import csv
 from os.path import join
 
-from ShellRec.training_utils.shell_rec import TurtleDiff, TurtleDataset, train
+from ShellRec.training.shell_rec import TurtleDiff, TurtlePair, train
 
 
 # Path: scripts/train_shell_rec.py
@@ -33,10 +33,10 @@ def main():
     
 
     # Set up datasets and dataloaders
-    train_loader = DataLoader( TurtleDataset(data_file='./dataset/train.json', 
+    train_loader = DataLoader( TurtlePair(data_file='./dataset/train.json', 
                                              transform=transform_train), 
                                              batch_size = 20)
-    val_loader = DataLoader( TurtleDataset(data_file='./dataset/val.json', 
+    val_loader = DataLoader( TurtlePair(data_file='./dataset/val.json', 
                                            transform=transform_test), 
                                            batch_size = 20)
     train(model, optimizer, criterion, train_loader, val_loader, device, num_epochs)

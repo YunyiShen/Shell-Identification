@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 import json
 from os.path import join
+from PIL import Image
 
 
 # class for datasets
@@ -27,8 +28,8 @@ class TurtlePair(Dataset):
         return len(self.data)
     
     def __getitem__(self, idx):
-        image1 = visionio.read_image(self.data[idx][0])
-        image2 = visionio.read_image(self.data[idx][1])
+        image1 = Image.open(self.data[idx][0]).convert('RGB')
+        image2 = Image.open(self.data[idx][1]).convert('RGB')
         label = torch.tensor(self.data[idx][2])
         if self.transform:
             image1 = self.transform(image1)
@@ -39,7 +40,8 @@ class TurtleDiff(nn.Module):
     def __init__(self, backbone, pretrained = True):
         super(TurtleDiff, self).__init__()
         self.backbone = timm.create_model(backbone, 
-                                          pretrained=pretrained)
+                                          pretrained=pretrained,
+                                          num_classes=0)
         self.backbone_name = backbone
         self.fc = nn.Linear(self.backbone.num_features, 2)
 
