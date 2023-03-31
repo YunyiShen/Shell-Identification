@@ -10,6 +10,7 @@ from torch.utils.data import Dataset
 import json
 from os.path import join
 from PIL import Image
+from tqdm import tqdm
 
 
 # class for datasets
@@ -37,13 +38,14 @@ class TurtlePair(Dataset):
         return image1, image2, label
 
 class TurtleDiff(nn.Module):
-    def __init__(self, backbone, pretrained = True):
+    def __init__(self, backbone, hidden = 100,pretrained = True):
         super(TurtleDiff, self).__init__()
         self.backbone = timm.create_model(backbone, 
                                           pretrained=pretrained,
                                           num_classes=0)
         self.backbone_name = backbone
-        self.fc = nn.Linear(self.backbone.num_features, 2)
+        self.fc = nn.Linear(self.backbone.num_features, hidden)
+        self.fc2 = nn.Linear(hidden, 2)
 
         # Freeze the parameters of the backbone if use pretrained
         if(pretrained):
@@ -56,6 +58,8 @@ class TurtleDiff(nn.Module):
         # difference between the two image embeddings, one way to make sure symmetry
         x = torch.abs(x1 - x2) 
         x = self.fc(x)
+        x = nn.ReLU()(x)
+        x = self.fc2(x)
         return x
 
 def train(model, optimizer, criterion, 
@@ -66,7 +70,8 @@ def train(model, optimizer, criterion,
     best_val_acc = 0
     model.to(device)
     for epoch in range(num_epochs):
-        for images1, images2, labels in train_loader:
+        print(f"Epoch: {epoch+1}/{num_epochs}")
+        for images1, images2, labels in tqdm(train_loader):
             #print(images.shape)
             images1, images2, labels = images1.to(device), \
                                        images2.to(device), \

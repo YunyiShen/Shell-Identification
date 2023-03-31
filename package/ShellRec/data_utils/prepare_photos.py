@@ -4,11 +4,16 @@ import json
 from os.path import join
 import random
 
-def get_img_graph(path, extensions = ["*.JPG", "*.jpeg","*.jpg"],file_to_save=None):
+def get_img_graph(path, extensions = ["*.JPG", "*.jpeg","*.jpg"],
+                  file_to_save=None, 
+                  drop_p = [0,0]):
     '''
     reads in all the images in a path, get a json with each item being [img1, img2, label]
     where label is whether they are from the same individual. 
     I assume that the string before first "-" is the individual identifier
+
+    drop_p: [p1, p2] where p1 is the probability of dropping an pair from the different individual, 
+    p2 is the probability of dropping a pair from same individuals
     '''
     img_graph = []
     if(len(extensions) == 0):
@@ -21,7 +26,8 @@ def get_img_graph(path, extensions = ["*.JPG", "*.jpeg","*.jpg"],file_to_save=No
             img1 = img_paths[i]
             img2 = img_paths[j]
             label = 1 if img1.split("-")[0] == img2.split("-")[0] else 0
-            img_graph.append([img1, img2, label])
+            if random.uniform(0,1) > drop_p[label]:
+                img_graph.append([img1, img2, label])
     if file_to_save:
         with open(file_to_save, "w") as f:
             json.dump(img_graph, f)
