@@ -81,6 +81,7 @@ class TurtleDiffPool(nn.Module):
         x1 = self.backbone(x1) 
         x2 = self.backbone(x2)
         # get two way difference, then pool them after nonlinearity
+        
         x1p = x1 - x2
         x2p = x2 - x1
         x1p = self.fc(x1p)
@@ -88,7 +89,54 @@ class TurtleDiffPool(nn.Module):
         x2p = self.fc(x2p)
         x2p = nn.ReLU()(x2p)
         x = (x1p+x2p)/2
+        '''
+        x = x1 - x2
+        x = self.fc(x)
+        x = torch.abs(x) # equivalent to the above
+        '''
         x = self.fc2(x)
+        
+        return x
+    
+
+class TurtleDiffConvPool(nn.Module):
+    def __init__(self, hidden = 100):
+        super(TurtleDiffConvPool, self).__init__()
+        
+        self.backbone = timm.create_model('resnet50', 
+                                          pretrained=True,
+                                          num_classes=0)
+        
+        self.backbone_name = 'resnet50-conv-pool'
+        
+        self.fc = nn.Linear(self.backbone.num_features, hidden)
+        self.fc2 = nn.Linear(hidden, 2)
+
+        for name, param in self.backbone.named_parameters():
+            if name.startswith("layer4.2.conv3"):
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
+    
+    def forward(self, x1, x2):
+        x1 = self.backbone(x1) 
+        x2 = self.backbone(x2)
+        # get two way difference, then pool them after nonlinearity
+        
+        x1p = x1 - x2
+        x2p = x2 - x1
+        x1p = self.fc(x1p)
+        x1p = nn.ReLU()(x1p)
+        x2p = self.fc(x2p)
+        x2p = nn.ReLU()(x2p)
+        x = (x1p+x2p)/2
+        '''
+        x = x1 - x2
+        x = self.fc(x)
+        x = torch.abs(x) # equivalent to the above
+        '''
+        x = self.fc2(x)
+        
         return x
 
 class TurtleDiffConv(nn.Module):
