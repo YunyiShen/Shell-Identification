@@ -1,0 +1,5 @@
+# Ignore photos, too big
+*.jpg
+*.JPG
+*.jpeg
+*.heic
