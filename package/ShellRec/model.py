@@ -174,3 +174,19 @@ class TurtleDiffAttnPool(nn.Module):
         
         return x
 
+class TurtleEmbdAttn(nn.Module):
+    def __init__(self):
+        super(TurtleEmbdAttn, self).__init__()
+        
+        self.backbone = timm.create_model('vit_base_patch16_384', 
+                                          pretrained=True,
+                                          num_classes=0)
+        self.backbone_name = 'vit_base_patch16_384-attn'
+        for name, param in self.backbone.named_parameters():
+            if name.startswith("blocks.11.attn"):
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
+    
+    def forward(self, x):
+        return self.backbone(x)
