@@ -43,7 +43,7 @@ def train(model, optimizer, criterion,
         if accuracy > best_val_acc:
             torch.save(model.state_dict(), 
                        join(save_path, model.backbone_name + 
-                            '_turtle_embedding.pth')
+                            '_turtle_identifier.pth')
                        )
             best_val_acc = accuracy
     return loss_list
@@ -90,7 +90,7 @@ def train_embedding(model, optimizer,
         if val_loss < best_val_loss:
             torch.save(model.state_dict(), 
                        join(save_path, model.backbone_name + 
-                            '_turtle_identifier.pth')
+                            '_turtle_embedding.pth')
                        )
             best_val_loss = val_loss
     return loss_list
